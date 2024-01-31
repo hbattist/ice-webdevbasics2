@@ -30,17 +30,15 @@ fetch("https://cs571.org/api/s24/ice/chili", {
     imageHTML.src = data.img.location;
     imageHTML.alt = data.img.description;
 
-    // Set the instructions (done declaratively)
+    // Set the instructions
     const instructionsHTML = document.getElementById("instructions");
-    data.recipe
-        .map(step => {
-            const node = document.createElement("li");
-            node.innerText = step;
-            return node;
-        })
-        .forEach(li => instructionsHTML.appendChild(li))
+    for(let step of data.recipe) {
+        const node = document.createElement("li");
+        node.innerText = step;
+        instructionsHTML.appendChild(node)
+    }
 
-    // Set the ingredients (done imperatively)
+    // Set the ingredients
     // Remember! ingredients is an object of objects, not a list.
     const ingrsHTML = document.getElementById("ingredients-body");
     let ingrNames = Object.keys(data.ingredients);
