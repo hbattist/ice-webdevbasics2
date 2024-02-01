@@ -9,65 +9,72 @@ let recipe;
 let baseAmounts = [];
 let reviewNum = 0;
 
-fetch("https://cs571.org/api/s24/ice/chili", {
-    headers: {
-        "X-CS571-ID": CS571.getBadgerId() // you may hardcode your bid_
-    }
-})
-.then(res => res.json())
-.then(data => {
-    recipe = JSON.parse(JSON.stringify(data)); // make a copy of the recipe available everywhere
-    console.log(data); // for debugging!
 
-    // Set the name and author
-    const nameHTML = document.getElementById("recipe-name");
-    nameHTML.innerText = data.name;
-    const authorHTML = document.getElementById("recipe-author");
-    authorHTML.innerText = "by " + data.author;
-
-    // Set the image
-    const imageHTML = document.getElementById("recipe-img");
-    imageHTML.src = data.img.location;
-    imageHTML.alt = data.img.description;
-
-    // Set the instructions
-    const instructionsHTML = document.getElementById("instructions");
-    for(let step of data.recipe) {
-        const node = document.createElement("li");
-        node.innerText = step;
-        instructionsHTML.appendChild(node)
-    }
-
-    // Set the ingredients
-    // Remember! ingredients is an object of objects, not a list.
-    const ingrsHTML = document.getElementById("ingredients-body");
-    let ingrNames = Object.keys(data.ingredients);
-    for(let ingrName of ingrNames) {
-        let ingr = data.ingredients[ingrName];
-
-        const ingrRowHTML = document.createElement("tr")
-        const ingrAmountHTML = document.createElement("td");
-        const ingrUnitHTML = document.createElement("td");
-        const ingrNameHTML = document.createElement("td");
-
-        baseAmounts.push(ingr.amount);
-
-        ingrAmountHTML.innerText = ingr.amount
-        if (ingr.unit) {
-            ingrUnitHTML.innerText = ingr.unit;
+function updateRecipe() {
+    const selectedRecipe = document.getElementById("recipe-selector").value;
+    fetch("https://cs571.org/api/s24/ice/" + selectedRecipe, {
+        headers: {
+            "X-CS571-ID": CS571.getBadgerId() // you may hardcode your bid_
         }
-        if (ingr.misc) {
-            ingrNameHTML.innerText = ingrName + " (" + ingr.misc + ")";
-        } else {
-            ingrNameHTML.innerText = ingrName;
+    })
+    .then(res => res.json())
+    .then(data => {
+        recipe = JSON.parse(JSON.stringify(data)); // make a copy of the recipe available everywhere
+        console.log(data); // for debugging!
+    
+        // Set the name and author
+        const nameHTML = document.getElementById("recipe-name");
+        nameHTML.innerText = data.name;
+        const authorHTML = document.getElementById("recipe-author");
+        authorHTML.innerText = "by " + data.author;
+    
+        // Set the image
+        const imageHTML = document.getElementById("recipe-img");
+        imageHTML.src = data.img.location;
+        imageHTML.alt = data.img.description;
+    
+        // Set the instructions
+        const instructionsHTML = document.getElementById("instructions");
+        instructionsHTML.innerHTML = ''; // clear out any existing instructions
+        for(let step of data.recipe) {
+            const node = document.createElement("li");
+            node.innerText = step;
+            instructionsHTML.appendChild(node)
         }
+    
+        // Set the ingredients
+        // Remember! ingredients is an object of objects, not a list.
+        const ingrsHTML = document.getElementById("ingredients-body");
+        ingrsHTML.innerHTML = ''; // clear out any existing ingredients
+        let ingrNames = Object.keys(data.ingredients);
+        for(let ingrName of ingrNames) {
+            let ingr = data.ingredients[ingrName];
+    
+            const ingrRowHTML = document.createElement("tr")
+            const ingrAmountHTML = document.createElement("td");
+            const ingrUnitHTML = document.createElement("td");
+            const ingrNameHTML = document.createElement("td");
+    
+            baseAmounts.push(ingr.amount);
+    
+            ingrAmountHTML.innerText = ingr.amount
+            if (ingr.unit) {
+                ingrUnitHTML.innerText = ingr.unit;
+            }
+            if (ingr.misc) {
+                ingrNameHTML.innerText = ingrName + " (" + ingr.misc + ")";
+            } else {
+                ingrNameHTML.innerText = ingrName;
+            }
+    
+            ingrRowHTML.appendChild(ingrAmountHTML);
+            ingrRowHTML.appendChild(ingrUnitHTML);
+            ingrRowHTML.appendChild(ingrNameHTML);
+            ingrsHTML.appendChild(ingrRowHTML);
+        }
+    })
+}
 
-        ingrRowHTML.appendChild(ingrAmountHTML);
-        ingrRowHTML.appendChild(ingrUnitHTML);
-        ingrRowHTML.appendChild(ingrNameHTML);
-        ingrsHTML.appendChild(ingrRowHTML);
-    }
-})
 
 function updateYield() {
     if (!recipe) {
@@ -93,3 +100,6 @@ function displayReview() {
         reviewNum = (reviewNum + 1) % recipe.reviews.length;
     }
 }
+
+// run updateRecipe on script load
+updateRecipe();
