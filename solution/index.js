@@ -46,6 +46,7 @@ function updateRecipe() {
         // Remember! ingredients is an object of objects, not a list.
         const ingrsHTML = document.getElementById("ingredients-body");
         ingrsHTML.innerHTML = ''; // clear out any existing ingredients
+        baseAmounts = [];         // as well as any existing base amounts
         let ingrNames = Object.keys(data.ingredients);
         for(let ingrName of ingrNames) {
             let ingr = data.ingredients[ingrName];
