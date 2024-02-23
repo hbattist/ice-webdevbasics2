@@ -13,6 +13,21 @@ const REVIEWS = [
     "Quick, flavorful, and satisfying - this chili hits all the right notes!"
 ]
 
+fetch("https://cs571.org/api/s24/ice/chili", {
+    headers: {
+        "Harrison-CS571-ID": "bid_eb0a06fdc0bc2f6bcdfb5c11f89faeaa5daa042e673534fd45dd6986c008a32a"
+    }
+})
+.then((r) => {
+    console.log(r.status)
+    return r.json()
+})
+.then((data) => {
+    console.log(data)
+})
+console.log("Hellow World")
+
+
 function updateYield() {
     alert("I should update the yield!");
 }
